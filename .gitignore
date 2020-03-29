@@ -1,3 +1,4 @@
+.DS_Store
 *.rbc
 capybara-*.html
 .rspec
@@ -65,3 +66,6 @@ yarn-debug.log*
 # Ignore uploaded files in development
 /storage/*
 !/storage/.keep
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
