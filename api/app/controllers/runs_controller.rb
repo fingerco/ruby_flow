@@ -1,6 +1,6 @@
 class RunsController < ApplicationController
   def create
-    runner = WorkflowRunner::Runner.new(request.raw_post)
+    runner = WorkflowRunner::Runner.new(params.require(:workflow))
     runner.run
 
     render json: {
