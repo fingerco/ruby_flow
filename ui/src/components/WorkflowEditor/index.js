@@ -12,13 +12,13 @@ const formatSteps = (steps) => {
   return formatted
 }
 
-export default function WorkflowEditor ({ dir = 'shared', name = '', workflow = {} }) {
-  const [workflowPath, setWorkflowPath] = React.useState(name)
+export default function WorkflowEditor ({ projectSlug, name = '', workflow = {} }) {
+  const [workflowName, setWorkflowName] = React.useState(name)
   const [steps, setSteps] = React.useState(formatSteps(workflow.steps))
   const [runData, setRunData] = React.useState(null)
 
   React.useEffect(() => {
-    setWorkflowPath(name)
+    setWorkflowName(name)
   }, [name])
 
   React.useEffect(() => {
@@ -43,7 +43,8 @@ export default function WorkflowEditor ({ dir = 'shared', name = '', workflow = 
   const save = React.useCallback(() => {
     const workflow = {steps: Object.values(steps)}
 
-    axios.post(`http://localhost:3000/workflows/${dir}/${name}`, {
+    axios.post(`http://localhost:3000/projects/${projectSlug}/workflows/${workflowName.replace(' ', '-').toLowerCase()}`, {
+      name: workflowName,
       workflow: YAML.stringify(workflow)
     })
   }, [steps])
@@ -51,7 +52,7 @@ export default function WorkflowEditor ({ dir = 'shared', name = '', workflow = 
   return (
     <div>
       <div className='meta'>
-        <input type="text" value={workflowPath} onChange={(evt) => setWorkflowPath(evt.target.value)} />
+        <input type="text" value={workflowName} onChange={(evt) => setWorkflowName(evt.target.value)} />
       </div>
 
       {Object.values(steps).map((step) => (

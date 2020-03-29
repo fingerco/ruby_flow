@@ -7,3 +7,12 @@ services:
     volumes:
        - ./api:/usr/src/app
     env_file: .env
+  ui:
+    build: ./ui
+    ports:
+      - "3001:3001"
+    volumes:
+       - ./ui:/usr/src/app
+    env_file: .env
+    environment:
+      PORT: 3001
