@@ -1,16 +1,22 @@
 module WorkflowRunner
   class Environment
+    attr_accessor :output_str
     attr_reader :context
 
     def initialize
       @context = {}
+      @output_str = nil
     end
 
     def self.run(code, prev_env = nil)
       env = Environment.new
       env.rehydrate(prev_env) if prev_env
 
+      $stdout = StringIO.new
       env.instance_eval(code)
+      env.output_str = $stdout.string
+      $stdout = STDOUT
+
       env
     end
 
