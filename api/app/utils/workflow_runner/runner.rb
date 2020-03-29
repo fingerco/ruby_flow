@@ -10,8 +10,11 @@ module WorkflowRunner
     end
 
     def run
+      prev_env = Environment.new
+
       @steps.each do |step|
-        self.instance_eval(step['code'])
+        env = Environment.run(step['code'], prev_env)
+        prev_env = env
       end
     end
 
