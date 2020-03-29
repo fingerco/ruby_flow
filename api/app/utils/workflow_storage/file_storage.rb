@@ -23,9 +23,14 @@ module WorkflowStorage
     end
 
     def list_workflows(path)
-      Dir.entries(safer_path(path)).select do |entry|
+      workflow_files = Dir.entries(safer_path(path)).select do |entry|
         File.file?(File.join(safer_path(path), entry)) && entry.end_with?(".#{@language}")
       end.map{|filename| filename.gsub(".#{@language}", "")}
+
+      workflow_files.map do |workflow_slug|
+        workflow_file = File.join(safer_path(path), "#{workflow_slug}.#{@language}")
+        YAML.load_file(workflow_file).to_h.merge({path: workflow_slug})
+      end
     end
 
     def list_projects(path)

@@ -9,15 +9,25 @@ import './App.css'
 import YAML from 'yaml'
 import WorkflowEditor from '~/components/WorkflowEditor'
 import Projects from '~/views/Projects'
-import Project from '~/views/Project'
+import ProjectWorkflows from '~/views/ProjectWorkflows'
+import CreateProject from '~/views/CreateProject'
+import Workflow from '~/views/Workflow'
 
 export default function App() {
   return (
     <div className="App">
       <Router>
         <Switch>
-          <Route path="/projects/:path">
-            <Project />
+          <Route path="/projects/new">
+            <CreateProject />
+          </Route>
+
+          <Route path="/projects/:projectSlug/workflows/:workflowSlug">
+            <Workflow />
+          </Route>
+
+          <Route path="/projects/:projectSlug">
+            <ProjectWorkflows />
           </Route>
 
           <Route path="/">

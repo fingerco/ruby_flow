@@ -6,35 +6,53 @@ import {
 
 export default function Projects () {
   const [projects, setProjects] = React.useState([])
-  const [newProjectName, setNewProjectName] = React.useState('')
 
   React.useEffect(() => {
     axios.get(`http://localhost:3000/projects/`)
       .then((response) => setProjects(response.data.projects))
   }, [])
 
-  const createProject = React.useCallback(() => {
-    axios.post(`http://localhost:3000/projects/${newProjectName.replace(' ', '-').toLowerCase()}`, {name: newProjectName})
-
-  }, [newProjectName])
-
   return (
-    <div>
+    <div className='projects'>
+      <h1>Projects</h1>
+
       {projects.map((project) => (
-        <div key={project.name}>
-          <Link to={`/projects/${project.path}`}>{project.name}</Link>
-        </div>
+        <Link key={project.name} to={`/projects/${project.path}`} className='project-link'>
+          <div className='project'>
+            {project.name}
+          </div>
+        </Link>
       ))}
 
-      <div>
-        <input
-          type="text"
-          value={newProjectName}
-          onChange={(evt) => setNewProjectName(evt.target.value)}
-          placeholder="New Project Name" />
+      <Link to={`/projects/new`} className='project-link'>
+        <div className='project'>
+          Create new project...
+        </div>
+      </Link>
 
-        <button onClick={createProject}>Create Project</button>
-      </div>
+      <style jsx>{`
+        .projects {
+          margin: 1em;
+        }
+
+        .projects :global(.project-link) {
+          text-decoration-color: #ef02b1;
+        }
+
+        .project {
+          font-size: 1.5em;
+          padding: 1em;
+          background-color: white;
+          border: 1px solid #cecece;
+          border-radius: 5px;
+          color: black;
+        }
+
+        .project:hover {
+          background-color: #fcfcfc;
+          cursor: pointer;
+        }
+      `}</style>
     </div>
   )
 }

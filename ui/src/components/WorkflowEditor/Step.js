@@ -42,7 +42,7 @@ export default function Step ({ step, onChange, runData }) {
 
       <style jsx>{`
         .step {
-          margin: 1em;
+          margin-bottom: 1em;
           border-botom: 1px solid #cecece;
           display: flex;
 
