@@ -4,13 +4,20 @@ import AceEditor from "react-ace"
 import "ace-builds/src-noconflict/mode-ruby"
 import "ace-builds/src-noconflict/theme-monokai"
 
-export default function Step ({ step, onChange, runData }) {
+export default function Step ({ step, onChange, runData, steps, runStep }) {
   const [name, setName] = React.useState(step['name'] || '')
   const [code, setCode] = React.useState(step['code'] || '')
 
   React.useEffect(() => {
     onChange({...step, name: name, code: code})
   }, [name, code])
+
+  const myIdx = Object.keys(steps).indexOf(step.id)
+  let currContext = {}
+  Object.keys(steps).forEach((stepId, i) => {
+    if (!runData || i > myIdx) return
+    if (runData.contexts[stepId]) currContext = runData.contexts[stepId]
+  })
 
   return (
     <div className='step'>
@@ -32,11 +39,13 @@ export default function Step ({ step, onChange, runData }) {
             width='60em'
           />
         </div>
+
+        <button onClick={() => runStep(step.id, currContext)}>Run Step</button>
       </div>
 
       <div className='run-data'>
         {runData && runData.outputs[step.id] && (
-          <textarea defaultValue={runData.outputs[step.id]} />
+          <textarea value={runData.outputs[step.id] || ''} readOnly />
         )}
       </div>
 

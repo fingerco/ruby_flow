@@ -26,6 +26,19 @@ module WorkflowRunner
       end
     end
 
+    def run_step(id:, context:)
+      @steps.each do |step|
+        next unless step['id'] == id
+
+        env = Environment.new
+        env.context = context
+        env.run(step['code'])
+
+        @outputs[step['id']] = env.output_str
+        @contexts[step['id']] = env.context
+      end
+    end
+
     def load_workflow(desc, language)
       case language
       when :yaml

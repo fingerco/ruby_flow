@@ -9,4 +9,15 @@ class RunsController < ApplicationController
     }
 
   end
+
+  def run_step
+    runner = WorkflowRunner::Runner.new(params.require(:workflow))
+    runner.run_step(id: params.require(:step_id), context: params[:context] || {})
+
+    render json: {
+      outputs: runner.outputs,
+      contexts: runner.contexts
+    }
+
+  end
 end

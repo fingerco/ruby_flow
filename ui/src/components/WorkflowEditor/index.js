@@ -39,6 +39,23 @@ export default function WorkflowEditor ({ projectSlug, name = '', workflow = {} 
       .then((response) => setRunData(response.data))
   }, [steps])
 
+  const runStep = React.useCallback((stepId, ctx) => {
+    const workflow = {steps: Object.values(steps)}
+
+    axios.post(`http://localhost:3000/runs/step/${stepId}`, {context: ctx, workflow: YAML.stringify(workflow)})
+      .then((response) => {
+        const currRunData = runData || {}
+        const contexts = currRunData.contexts || {}
+        const outputs = currRunData.outputs || {}
+
+        setRunData({
+          ...currRunData,
+          contexts: {...contexts, [stepId]: response.data.contexts[stepId]},
+          outputs: {...outputs, [stepId]: response.data.outputs[stepId]}
+        })
+      })
+  }, [steps, runData])
+
   const save = React.useCallback(() => {
     const workflow = {name: workflowName, steps: Object.values(steps)}
     const workflowSlug = workflowName.replace(' ', '-').toLowerCase()
@@ -59,7 +76,9 @@ export default function WorkflowEditor ({ projectSlug, name = '', workflow = {} 
             key={step.id}
             step={step}
             onChange={(newStep) => setSteps({...steps, [step.id]: newStep})}
-            runData={runData} />
+            runData={runData}
+            steps={steps}
+            runStep={runStep} />
         ))}
 
         <div className='add'>

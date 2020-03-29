@@ -1,7 +1,6 @@
 module WorkflowRunner
   class Environment
-    attr_accessor :output_str
-    attr_reader :context
+    attr_accessor :context, :output_str
 
     def initialize
       @context = {}
@@ -11,13 +10,16 @@ module WorkflowRunner
     def self.run(code, prev_env = nil)
       env = Environment.new
       env.rehydrate(prev_env) if prev_env
-
-      $stdout = StringIO.new
-      env.instance_eval(code)
-      env.output_str = $stdout.string
-      $stdout = STDOUT
+      env.run(code)
 
       env
+    end
+
+    def run(code)
+      $stdout = StringIO.new
+      self.instance_eval(code)
+      self.output_str = $stdout.string
+      $stdout = STDOUT
     end
 
     def set_context_var(name, value)
