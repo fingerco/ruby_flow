@@ -3,12 +3,13 @@ import axios from 'axios'
 import {
   Link
 } from "react-router-dom"
+import { API_URL } from '~/utils/consts'
 
 export default function Projects () {
   const [projects, setProjects] = React.useState([])
 
   React.useEffect(() => {
-    axios.get(`http://localhost:3000/projects/`)
+    axios.get(`${API_URL}/projects/`)
       .then((response) => setProjects(response.data.projects))
   }, [])
 

@@ -7,12 +7,17 @@ services:
     volumes:
        - ./api:/usr/src/app
     env_file: .env
+    environment:
+      UI_URL: localhost:3001
   ui:
     build: ./ui
     ports:
       - "3001:3001"
     volumes:
        - ./ui:/usr/src/app
+    links:
+      - "api"
     env_file: .env
     environment:
       PORT: 3001
+      REACT_APP_API_URL: http://api:3000

@@ -4,6 +4,7 @@ import axios from 'axios'
 import YAML from 'yaml'
 import download from 'downloadjs'
 import { v4 as uuidv4 } from 'uuid'
+import { API_URL } from '~/utils/consts'
 import Step from './Step'
 import WorkflowName from './WorkflowName'
 import PrinterFriendlyOutput from '~/components/PrinterFriendlyOutput'
@@ -39,14 +40,14 @@ export default function WorkflowEditor ({ projectSlug, workflowSlug, name = '', 
 
   const run = React.useCallback(() => {
     const workflow = {steps: Object.values(steps)}
-    axios.post('http://localhost:3000/runs', {workflow: YAML.stringify(workflow)})
+    axios.post(`${API_URL}/runs`, {workflow: YAML.stringify(workflow)})
       .then((response) => setRunData(response.data))
   }, [steps])
 
   const runStep = React.useCallback((stepId, ctx) => {
     const workflow = {steps: Object.values(steps)}
 
-    axios.post(`http://localhost:3000/runs/step/${stepId}`, {context: ctx, workflow: YAML.stringify(workflow)})
+    axios.post(`${API_URL}/runs/step/${stepId}`, {context: ctx, workflow: YAML.stringify(workflow)})
       .then((response) => {
         const currRunData = runData || {}
         const contexts = currRunData.contexts || {}
@@ -66,7 +67,7 @@ export default function WorkflowEditor ({ projectSlug, workflowSlug, name = '', 
     const workflow = {name: workflowName, steps: Object.values(steps)}
     const slug = workflowSlug || workflowName.replace(' ', '-').toLowerCase()
 
-    axios.post(`http://localhost:3000/projects/${projectSlug}/workflows/${slug}`, {
+    axios.post(`${API_URL}/projects/${projectSlug}/workflows/${slug}`, {
       name: workflowName,
       workflow: YAML.stringify(workflow)
     })

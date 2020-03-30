@@ -4,13 +4,14 @@ import {
   Link,
   useParams
 } from "react-router-dom"
+import { API_URL } from '~/utils/consts'
 
 export default function ProjectWorkflows () {
   const { projectSlug } = useParams()
   const [workflows, setWorkflows] = React.useState([])
 
   React.useEffect(() => {
-    axios.get(`http://localhost:3000/projects/${projectSlug}/workflows`)
+    axios.get(`${API_URL}/projects/${projectSlug}/workflows`)
       .then((response) => setWorkflows(response.data.workflows))
   }, [])
 
