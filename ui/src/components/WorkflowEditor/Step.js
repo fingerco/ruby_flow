@@ -5,8 +5,8 @@ import "ace-builds/src-noconflict/mode-ruby"
 import "ace-builds/src-noconflict/theme-monokai"
 
 export default function Step ({ step, onChange, runData, steps, runStep }) {
-  const [name, setName] = React.useState(step['name'] || '')
-  const [code, setCode] = React.useState(step['code'] || '')
+  const [name, setName] = React.useState(step.name || '')
+  const [code, setCode] = React.useState(step.code || '')
 
   React.useEffect(() => {
     onChange({...step, name: name, code: code})
@@ -22,44 +22,50 @@ export default function Step ({ step, onChange, runData, steps, runStep }) {
   return (
     <div className='step'>
 
-      <div className='inputs'>
-        <div className='name'>
-          <input type="text" value={name} onChange={(evt) => setName(evt.target.value)} placeholder='Step Name' />
-        </div>
-
-        <div className='code'>
-          <AceEditor
-            mode="ruby"
-            theme="monokai"
-            tabSize={2}
-            value={code}
-            onChange={setCode}
-            name={`step_code_${step.id}`}
-            editorProps={{ $blockScrolling: true }}
-            width='60em'
-          />
-        </div>
-
-        <button onClick={() => runStep(step.id, currContext)}>Run Step</button>
+      <div className='name'>
+        <input type="text" value={name} onChange={(evt) => setName(evt.target.value)} placeholder='Step Name' />
       </div>
 
-      <div className='run-data'>
-        {runData && runData.outputs[step.id] && (
-          <textarea value={runData.outputs[step.id] || ''} readOnly />
-        )}
+      <div className='code-and-output'>
+        <div className='inputs'>
+          <div className='code'>
+            <AceEditor
+              mode="ruby"
+              theme="monokai"
+              tabSize={2}
+              value={code}
+              onChange={setCode}
+              name={`step_code_${step.id}`}
+              editorProps={{ $blockScrolling: true }}
+              width='60em'
+            />
+          </div>
+        </div>
+
+        <div className='run-data'>
+          {runData && runData.outputs[step.id] && (
+            <textarea value={runData.outputs[step.id] || ''} readOnly />
+          )}
+        </div>
       </div>
+
+      <button onClick={() => runStep(step.id, currContext)}>Run Step</button>
 
       <style jsx>{`
         .step {
+          border-bottom: 1px solid #cecece;
+          margin-bottom: 0.5em;
+          padding-bottom: 0.5em;
+        }
+        .code-and-output {
           margin-bottom: 1em;
-          border-botom: 1px solid #cecece;
           display: flex;
 
           width: 100%;
         }
 
-        .outputs {
-
+        .code-and-output :global(pre) {
+          margin: 0;
         }
 
         .name {
@@ -81,6 +87,7 @@ export default function Step ({ step, onChange, runData, steps, runStep }) {
         .run-data textarea {
           width: 100%;
           height: 100%;
+          box-sizing: border-box;
         }
       `}</style>
     </div>

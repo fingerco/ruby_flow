@@ -18,6 +18,7 @@ export default function Workflow () {
   return (
     <WorkflowEditor
       projectSlug={projectSlug}
+      workflowSlug={workflowSlug}
       name={workflow.name || ''}
       workflow={workflow} />
   )

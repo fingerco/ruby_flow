@@ -1,9 +1,12 @@
 import * as React from 'react'
+import ReactDOMServer from "react-dom/server"
 import axios from 'axios'
 import YAML from 'yaml'
+import download from 'downloadjs'
 import { v4 as uuidv4 } from 'uuid'
 import Step from './Step'
 import WorkflowName from './WorkflowName'
+import PrinterFriendlyOutput from '~/components/PrinterFriendlyOutput'
 
 const formatSteps = (steps) => {
   if (!steps) return {}
@@ -13,7 +16,7 @@ const formatSteps = (steps) => {
   return formatted
 }
 
-export default function WorkflowEditor ({ projectSlug, name = '', workflow = {} }) {
+export default function WorkflowEditor ({ projectSlug, workflowSlug, name = '', workflow = {} }) {
   const [workflowName, setWorkflowName] = React.useState(name)
   const [steps, setSteps] = React.useState(formatSteps(workflow.steps))
   const [runData, setRunData] = React.useState(null)
@@ -23,6 +26,7 @@ export default function WorkflowEditor ({ projectSlug, name = '', workflow = {} 
   }, [name])
 
   React.useEffect(() => {
+    setWorkflowName(workflow.name)
     setSteps(formatSteps(workflow.steps))
   }, [workflow])
 
@@ -58,13 +62,38 @@ export default function WorkflowEditor ({ projectSlug, name = '', workflow = {} 
 
   const save = React.useCallback(() => {
     const workflow = {name: workflowName, steps: Object.values(steps)}
-    const workflowSlug = workflowName.replace(' ', '-').toLowerCase()
+    const slug = workflowSlug || workflowName.replace(' ', '-').toLowerCase()
 
-    axios.post(`http://localhost:3000/projects/${projectSlug}/workflows/${workflowSlug}`, {
+    axios.post(`http://localhost:3000/projects/${projectSlug}/workflows/${slug}`, {
       name: workflowName,
       workflow: YAML.stringify(workflow)
     })
-  }, [steps])
+  }, [workflow, workflowName, steps])
+
+  const printOutput = React.useCallback(() => {
+    const workflow = {name: workflowName, steps: Object.values(steps)}
+
+    const app = ReactDOMServer.renderToString(
+      <PrinterFriendlyOutput
+        workflow={workflow}
+        runData={runData} />
+    )
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${workflowName}</title>
+        </head>
+
+        <body>
+          ${app}
+        </body>
+    </html>`
+
+    download(html, "output.html", "text/html")
+
+  }, [workflowName, steps, runData])
 
   return (
     <div className='workflow-editor'>
@@ -89,6 +118,10 @@ export default function WorkflowEditor ({ projectSlug, name = '', workflow = {} 
       <div className='run'>
         <button onClick={run}>Run All Steps</button>
         <button onClick={save}>Save Workflow</button>
+
+        <button onClick={printOutput}>
+          Download HTML
+        </button>
       </div>
 
       <style jsx>{`
