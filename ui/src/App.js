@@ -22,6 +22,10 @@ export default function App() {
             <CreateProject />
           </Route>
 
+          <Route path="/projects/:projectSlug/workflows/new">
+            <Workflow />
+          </Route>
+
           <Route path="/projects/:projectSlug/workflows/:workflowSlug">
             <Workflow />
           </Route>

@@ -8,7 +8,7 @@ export default function CreateProject () {
   const history = useHistory()
 
   const createProject = React.useCallback(() => {
-    const slug = name.replace(' ', '-').toLowerCase()
+    const slug = name.replace(/ /g, '-').toLowerCase()
     axios.post(`${API_URL}/projects/${slug}`, {name: name})
       .then(() => history.push(`/projects/${slug}`))
   }, [name])

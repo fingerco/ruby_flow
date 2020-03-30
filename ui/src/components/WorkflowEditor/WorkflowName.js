@@ -1,17 +1,17 @@
 import * as React from 'react'
 
-export default function WorkflowName({ name, onChange }) {
+export default function WorkflowName({ name, onChange, defaultEditing = false }) {
+  const [origName] = React.useState(name)
   const [workflowName, setWorkflowName] = React.useState(name)
-  const [editing, setEditing] = React.useState(!workflowName)
+  const [editing, setEditing] = React.useState(defaultEditing)
 
   React.useEffect(() => {
     setWorkflowName(name)
-    setEditing(!name)
   }, [name])
 
   return (
     <div className='meta'>
-      {workflowName && !editing && (
+      {!editing && (
         <div className='content'>
           <h1>{workflowName}</h1>
 
@@ -31,11 +31,11 @@ export default function WorkflowName({ name, onChange }) {
             type="text"
             placeholder="Workflow Name"
             value={workflowName}
-            onChange={(evt) => setWorkflowName(evt.target.value)} />
+            onChange={(evt) => onChange(evt.target.value)} />
 
           <span style={{marginLeft: '1em'}}>
             <button onClick={() => { onChange(workflowName); setEditing(false); }}>Change</button>
-            <button onClick={() => { setWorkflowName(name); setEditing(false); }}>Cancel</button>
+            <button onClick={() => { onChange(origName); setEditing(false); }}>Cancel</button>
           </span>
         </div>
       )}

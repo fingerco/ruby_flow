@@ -12,4 +12,4 @@ COPY yarn.lock yarn.lock
 RUN yarn
 COPY . .
 
-CMD ["yarn", "start"]
+CMD ["/bin/bash", "run.sh"]

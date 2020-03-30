@@ -63,7 +63,7 @@ export default function WorkflowEditor ({ projectSlug, workflowSlug, name = '', 
 
   const save = React.useCallback(() => {
     const workflow = {name: workflowName, steps: Object.values(steps)}
-    const slug = workflowSlug || workflowName.replace(' ', '-').toLowerCase()
+    const slug = workflowSlug || workflowName.replace(/ /g, '-').toLowerCase()
 
     axios.post(`${API_URL}/projects/${projectSlug}/workflows/${slug}`, {
       name: workflowName,
@@ -98,7 +98,7 @@ export default function WorkflowEditor ({ projectSlug, workflowSlug, name = '', 
 
   return (
     <div className='workflow-editor'>
-      <WorkflowName name={workflowName} onChange={setWorkflowName} />
+      <WorkflowName name={workflowName} onChange={setWorkflowName} defaultEditing={!workflowSlug} />
 
       <div className='steps'>
         {Object.values(steps).map((step) => (
