@@ -22,6 +22,7 @@ module WorkflowRunner
 
         @outputs[step['id']] = env.output_str
         @contexts[step['id']] = env.context
+        @timings[step['id']] = env.timings
 
         prev_env = env
       end

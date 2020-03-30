@@ -50,6 +50,11 @@ export default function Step ({ step, onChange, runData, steps, runStep }) {
       </div>
 
       <button onClick={() => runStep(step.id, currContext)}>Run Step</button>
+      <div className='timings'>
+        {runData && runData.timings && runData.timings[step.id] && Object.keys(runData.timings[step.id]).map((name) => (
+          <div>{name} - {runData.timings[step.id][name].real} seconds</div>
+        ))}
+      </div>
 
       <style jsx>{`
         .step {
@@ -88,6 +93,10 @@ export default function Step ({ step, onChange, runData, steps, runStep }) {
           width: 100%;
           height: 100%;
           box-sizing: border-box;
+        }
+
+        .timings {
+          margin-top: 1em;
         }
       `}</style>
     </div>

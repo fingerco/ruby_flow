@@ -51,11 +51,13 @@ export default function WorkflowEditor ({ projectSlug, workflowSlug, name = '', 
         const currRunData = runData || {}
         const contexts = currRunData.contexts || {}
         const outputs = currRunData.outputs || {}
+        const timings = currRunData.timings || {}
 
         setRunData({
           ...currRunData,
           contexts: {...contexts, [stepId]: response.data.contexts[stepId]},
-          outputs: {...outputs, [stepId]: response.data.outputs[stepId]}
+          outputs: {...outputs, [stepId]: response.data.outputs[stepId]},
+          timings: {...timings, [stepId]: response.data.timings[stepId]},
         })
       })
   }, [steps, runData])
