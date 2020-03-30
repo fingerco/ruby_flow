@@ -1,5 +1,6 @@
 import * as React from 'react'
 import AceEditor from "react-ace"
+import { RadialBarChart, RadialBar, Legend } from 'recharts';
 
 import "ace-builds/src-noconflict/mode-ruby"
 import "ace-builds/src-noconflict/theme-monokai"
@@ -43,17 +44,22 @@ export default function Step ({ step, onChange, runData, steps, runStep }) {
         </div>
 
         <div className='run-data'>
-          {runData && runData.outputs[step.id] && (
-            <textarea value={runData.outputs[step.id] || ''} readOnly />
+          {runData && (runData.errors[step.id] || runData.outputs[step.id]) && (
+            <textarea value={runData.errors[step.id] || runData.outputs[step.id] || ''} readOnly />
           )}
         </div>
       </div>
 
       <button onClick={() => runStep(step.id, currContext)}>Run Step</button>
       <div className='timings'>
-        {runData && runData.timings && runData.timings[step.id] && Object.keys(runData.timings[step.id]).map((name) => (
-          <div>{name} - {runData.timings[step.id][name].real} seconds</div>
-        ))}
+        {runData && runData.timings && runData.timings[step.id] && Object.keys(runData.timings[step.id]).map((name) => {
+          const totalTime = runData.timings[step.id]['step_total'].real
+          const currTime = runData.timings[step.id][name].real
+
+          return (
+            <div>{currTime.toFixed(2)} seconds ({(currTime / totalTime).toFixed(2) * 100}%) - {name}</div>
+          )
+        })}
       </div>
 
       <style jsx>{`

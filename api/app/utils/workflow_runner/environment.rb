@@ -1,13 +1,17 @@
 require "benchmark"
+require "allocation_stats"
 
 module WorkflowRunner
   class Environment
-    attr_accessor :context, :output_str, :timings
+    attr_accessor :context, :output_str, :error_str, :timings, :allocations
+    class RuntimeException < Exception; end
 
     def initialize
       @context = {}
-      @output_str = nil
+      @output_str = ''
+      @error_str = ''
       @timings = {}
+      @allocations = {}
     end
 
     def self.run(code, prev_env = nil)
@@ -20,12 +24,22 @@ module WorkflowRunner
 
     def run(code)
       $stdout = StringIO.new
-      time = Benchmark.measure do
-        self.instance_eval(code)
-      end
+      $stderr = StringIO.new
 
-      self.output_str = $stdout.string
-      $stdout = STDOUT
+      time = Benchmark.measure do
+        begin
+          self.instance_eval(code)
+        rescue Exception => err
+          $stderr.puts err
+          $stderr.puts err.backtrace
+          raise RuntimeException.new(err)
+        ensure
+          self.output_str = $stdout.string
+          self.error_str = $stderr.string
+          $stdout = STDOUT
+          $stderr = STDERR
+        end
+      end
 
       @timings['step_total'] = time
     end
@@ -36,6 +50,14 @@ module WorkflowRunner
       end
 
       @timings[name] = time
+    end
+
+    def record_allocations(name, &block)
+      stats = AllocationStats.trace do
+        self.instance_eval(&block)
+      end
+
+      @allocations[name] = stats.allocations(alias_paths: true).to_text
     end
 
     def set_context_var(name, value)

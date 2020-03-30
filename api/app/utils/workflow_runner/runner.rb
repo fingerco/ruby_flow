@@ -4,27 +4,32 @@ module WorkflowRunner
   class Runner
     class WorkflowLoadError < StandardError; end
 
-    attr_reader :outputs, :contexts, :timings
+    attr_reader :outputs, :errors, :contexts, :timings, :allocations
 
     def initialize(workflow_desc, language = :yaml)
       @workflow_desc = load_workflow(workflow_desc, language)
       @steps = @workflow_desc['steps']
       @outputs = {}
+      @errors = {}
       @contexts = {}
       @timings = {}
+      @allocations = {}
     end
 
     def run
       prev_env = Environment.new
 
       @steps.each do |step|
-        env = Environment.run(step['code'], prev_env)
+        begin
+          env = Environment.run(step['code'], prev_env)
+          record_env_run(step['id'], env)
+          prev_env = env
 
-        @outputs[step['id']] = env.output_str
-        @contexts[step['id']] = env.context
-        @timings[step['id']] = env.timings
-
-        prev_env = env
+        rescue Environment::RuntimeException => err
+          record_env_run(step['id'], env)
+          puts "Runtime error - Stopping workflow"
+          break
+        end
       end
     end
 
@@ -32,14 +37,25 @@ module WorkflowRunner
       @steps.each do |step|
         next unless step['id'] == id
 
-        env = Environment.new
-        env.context = context
-        env.run(step['code'])
-
-        @outputs[step['id']] = env.output_str
-        @contexts[step['id']] = env.context
-        @timings[step['id']] = env.timings
+        begin
+          env = Environment.new
+          env.context = context
+          env.run(step['code'])
+          record_env_run(step['id'], env)
+        rescue Environment::RuntimeException => err
+          record_env_run(step['id'], env)
+          puts "Runtime error - Stopping workflow"
+          break
+        end
       end
+    end
+
+    def record_env_run(step_id, env)
+      @outputs[step_id] = env.output_str
+      @errors[step_id] = env.error_str
+      @contexts[step_id] = env.context
+      @timings[step_id] = env.timings
+      @allocations[step_id] = env.allocations
     end
 
     def load_workflow(desc, language)

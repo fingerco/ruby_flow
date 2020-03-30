@@ -49,17 +49,15 @@ export default function WorkflowEditor ({ projectSlug, workflowSlug, name = '', 
 
     axios.post(`${API_URL}/runs/step/${stepId}`, {context: ctx, workflow: YAML.stringify(workflow)})
       .then((response) => {
-        const currRunData = runData || {}
-        const contexts = currRunData.contexts || {}
-        const outputs = currRunData.outputs || {}
-        const timings = currRunData.timings || {}
+        const currRunData = runData ? {...runData} : {}
 
-        setRunData({
-          ...currRunData,
-          contexts: {...contexts, [stepId]: response.data.contexts[stepId]},
-          outputs: {...outputs, [stepId]: response.data.outputs[stepId]},
-          timings: {...timings, [stepId]: response.data.timings[stepId]},
+        Object.keys(response.data).forEach((keyName) => {
+          currRunData[keyName] = {...(currRunData[keyName] || {}),
+            [stepId]: response.data[keyName][stepId]
+          }
         })
+
+        setRunData(currRunData)
       })
   }, [steps, runData])
 

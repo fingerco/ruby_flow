@@ -5,8 +5,10 @@ class RunsController < ApplicationController
 
     render json: {
       outputs: runner.outputs,
+      errors: runner.errors,
       contexts: runner.contexts,
-      timings: runner.timings
+      timings: runner.timings,
+      allocations: runner.allocations
     }
 
   end
@@ -17,8 +19,10 @@ class RunsController < ApplicationController
 
     render json: {
       outputs: runner.outputs,
+      errors: runner.errors,
       contexts: runner.contexts,
-      timings: runner.timings
+      timings: runner.timings,
+      allocations: runner.allocations
     }
 
   end
