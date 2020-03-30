@@ -4,13 +4,14 @@ module WorkflowRunner
   class Runner
     class WorkflowLoadError < StandardError; end
 
-    attr_reader :outputs, :contexts
+    attr_reader :outputs, :contexts, :timings
 
     def initialize(workflow_desc, language = :yaml)
       @workflow_desc = load_workflow(workflow_desc, language)
       @steps = @workflow_desc['steps']
       @outputs = {}
       @contexts = {}
+      @timings = {}
     end
 
     def run
@@ -36,6 +37,7 @@ module WorkflowRunner
 
         @outputs[step['id']] = env.output_str
         @contexts[step['id']] = env.context
+        @timings[step['id']] = env.timings
       end
     end
 

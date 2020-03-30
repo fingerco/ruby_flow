@@ -17,6 +17,8 @@ export default function Step ({ step, onChange, runData, steps, runStep }) {
       <style type="text/css">{`
         .step pre {
           margin: 0;
+          height: 100%;
+          box-sizing: border-box;
         }
       `}</style>
 
@@ -25,7 +27,7 @@ export default function Step ({ step, onChange, runData, steps, runStep }) {
       </div>
 
       <div className='code-and-outputs' style={{display: 'flex'}}>
-        <div className='inputs' style={{height: '100%', boxSizing: 'border-box', minWidth: '40em', maxWidth: '50%'}}>
+        <div className='inputs' style={{boxSizing: 'border-box', minWidth: '40em', maxWidth: '50%'}}>
           <div className='code'>
             <SyntaxHighlighter language="ruby" style={monokai}>
               {step.code}
